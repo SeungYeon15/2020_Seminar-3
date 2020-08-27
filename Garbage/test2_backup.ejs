@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+
+    <title>Device Monitoring</title>
+
+
+    <link href="./semantic.min.css" rel="stylesheet">
+    <script src="./jquery-3.1.1.min.js"></script>
+    <script src="./semantic.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#button1').click(function() {
+                if ($(this).html() == 'Turn on') {
+                    $(this).html('Turn off');
+                } else {
+                    $(this).html('Turn on');
+                }
+                if ($(this).prev().html() == 'On') {
+                    $(this).prev().html('Off');
+                } else {
+                    $(this).prev().html('On');
+                }
+            });
+        });
+        $(function() {
+            $('#button2').click(function() {
+                if ($(this).html() == 'Turn on') {
+                    $(this).html('Turn off');
+                } else {
+                    $(this).html('Turn on');
+                }
+                if ($(this).prev().html() == 'On') {
+                    $(this).prev().html('Off');
+                } else {
+                    $(this).prev().html('On');
+                }
+            });
+        });
+        $(function() {
+            $('#button3').click(function() {
+                if ($(this).html() == 'Turn on') {
+                    $(this).html('Turn off');
+                } else {
+                    $(this).html('Turn on');
+                }
+                if ($(this).prev().html() == 'On') {
+                    $(this).prev().html('Off');
+                } else {
+                    $(this).prev().html('On');
+                }
+            });
+        });
+        $(function() {
+            $('#button4').click(function() {
+                if ($(this).is(":checked")) {
+                    $(this).parent().prev().html('On');
+                } else {
+                    $(this).parent().prev().html('Off');
+                }
+
+                if ($("input:checkbox[name=complete_yn]").is(":class") == true) {
+                    $("input:checkbox[name=complete_yn]").prop("checked", false);
+                }
+            });
+        });
+        $(function() {
+            $('#button5').click(function() {
+                if ($(this).is(":checked")) {
+                    $(this).parent().prev().html('On');
+                } else {
+                    $(this).parent().prev().html('Off');
+                }
+
+                if ($("input:checkbox[name=complete_yn]").is(":class") == true) {
+                    $("input:checkbox[name=complete_yn]").prop("checked", false);
+                }
+            });
+        });
+        $(document).ready(function() {
+            $(".slideBtn> input").change(function() {
+                if ($(this).is(":checked")) {
+                    $(this).parent().addClass("skyblue");
+                } else {
+                    $(this).parent().removeClass("skyblue");
+                }
+            });
+        });
+
+        //모바일, PC구분
+        var filter = "win16|win32|win64|mac|macintel";
+        if (navigator.platform) {
+            if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
+                alert('mobile 접속');
+
+                $(function() {
+                    $('.ui button').click(function() {
+                        $("a").attr("href", "mo")
+                    });
+                });
+
+            } else {
+                alert('pc 접속');
+
+                $(function() {
+                    $('.ui button').click(function() {
+                        $("a").attr("href", "pc")
+
+                    });
+                });
+
+            }
+        }
+
+    </script>
+
+    <!--토글키 스타일-->
+    <style>
+        .slideBtn {
+            position: relative;
+            display: block;
+            width: 60px;
+            height: 34px;
+            background: #ccc;
+        }
+
+        .slideBtn>span {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: .4s;
+            cursor: pointer;
+        }
+
+        .slideBtn>input:checked+span {
+            transform: translateX(26px);
+        }
+
+        .slideBtn>input {
+            opacity: 0;
+        }
+
+        .skyblue {
+            background: skyblue;
+        }
+
+    </style>
+
+    <!--양 사이드 간격 두기-->
+    <style>
+        body {
+            padding: 1rem;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <div class="ui sizer vertical segment">
+        <div class="ui huge header">Now Device List And Value</div>
+    </div>
+    <table class="ui striped table">
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th>Monitoring</th>
+                <th>Sensor List</th>
+                <th>Actuator List</th>
+            </tr>
+            <tr>
+                <td><a href="tempA.html">device1</a></td>
+                <td><a href="monitoringUi.html"><button class="ui button">Monitoring</button></a></td>
+                <td><%= devicelist[1][0][1]+" " %>&emsp;<%= devicelist[1][0][2]+" " %>&emsp;<%= devicelist[1][0][3]+" " %></td>
+                <!--                <td>On</td>-->
+                <td>
+                    <select class="ui fluid search dropdown" multiple="">
+                        <option value="">State</option>
+                        <option value="led"><%= devicelist[1][2][1]%></option>
+                    </select>
+                    <script>
+                        $('.ui.dropdown').dropdown('hidden');
+
+                    </script>Status: <div>Off</div>
+                    <button class="ui button" id='button1'>Turn on</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td><a href="tempB.html">device3</a></td>
+                <td><a href="monitoringUi.html"><button class="ui button">Monitoring</button></a></td>
+                <td><%= devicelist[3][0][1]+" " %>&emsp;<%= devicelist[3][0][2]+" " %></td>
+                <!--                <td>On</td>-->
+                <td>
+                    <select class="ui fluid search dropdown" multiple="">
+                        <option value="">State</option>
+                        <option value="led"><%= devicelist[3][2][1]%></option>
+
+                    </select>
+                    <script>
+                        $('.ui.dropdown').dropdown('hidden');
+
+                    </script>Status: <div>Off</div>
+                    <button class="ui button" id='button2'>Turn on</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td><a href="tempD.html">device4</a></td>
+                <td><a href="monitoringUi.html"><button class="ui button">Monitoring</button></a></td>
+                <td><%= devicelist[4][0][1]+" " %>&emsp;<%= devicelist[4][0][2]+" " %></td>
+                <!--                <td>On</td>-->
+                <td>
+                    <select class="ui fluid search dropdown" multiple="">
+                        <option value="">State</option>
+                        <option value="led"><%= devicelist[4][2][1]%></option>
+
+                    </select>
+                    <script>
+                        $('.ui.dropdown').dropdown('hidden');
+
+                    </script>Status: <div>On</div>
+                    <label class="slideBtn skyblue"><input type="checkbox" id='button4' name="complete_yn" checked="ckecked"><span></span></label>
+                </td>
+            </tr>
+            <tr>
+                <td><a href="tempE.html">device5</a></td>
+                <td><a href="monitoringUi.html"><button class="ui button">Monitoring</button></a></td>
+                <td><%= devicelist[5][0][1]+" " %>&emsp;<%= devicelist[5][0][2]+" " %>&emsp;<%= devicelist[5][0][3]+" " %></td>
+                <!--                <td>Off</td>-->
+                <td>
+                    <select class="ui fluid search dropdown" multiple="">
+                        <option value="">State</option>
+                        <option value="led"><%= devicelist[5][2][1]%></option>
+                    </select>
+                    <script>
+                        $('.ui.dropdown').dropdown('hidden');
+
+                    </script>Status: <div>Off</div>
+                    <label class="slideBtn"><input type="checkbox" id='button5' name="complete_yn"><span></span></label>
+                </td>
+            </tr>
+        </thead>
+        <!--        <tbody id="my-tbody"></tbody>-->
+    </table>
+
+
+    <table class="ui striped table">
+        <thead>
+            <tr>
+                <th>Device</th>
+                <th>Monitoring</th>
+                <th>Sensor List</th>
+                <th>Actuator List</th>
+            </tr>
+<% 
+    for (let i in devicelist){ 
+%>
+            <tr>
+<%
+    if(i!=null){
+        console.log(i);
+%>
+                <td><a href="tempA.html"><%= '[' + i + '] ' + 'device0001'%></a></td>
+                <td><a href="monitoringUi.html"><button class="ui button">Monitoring</button></a></td>
+                <td>
+<% 
+    }
+
+    for(let j in devicelist[i]){
+        for(let k in devicelist[i][j]){
+            if(devicelist[i][j][k]!=null && j==0){
+%>
+                    <%= devicelist[i][j][k]+" " %>&emsp;
+<% 
+            }
+       
+            if(j==2){
+                for(let m in devicelist[i][j][k]){
+                    console.log((m) +"     " + i + "     " + j + "     " +k+ "     " +m+"  번째");
+                    console.log(devicelist[i][j][k][m] +"     " + i + "     " + j + "     " +k+ "     " +m+"  번째" );
+%>
+                <td>
+                <select class="ui fluid search dropdown" multiple="">
+                    <option value="">State</option>
+                    <option value="led"><%= m%></option>
+                </select>
+                <script>
+                    $('.ui.dropdown').dropdown('hidden');
+
+                </script>Status: <div><%= devicelist[i][j][k][m]%></div>
+                <button class="ui button" id='button1'>Turn on</button>
+                </td>
+<%
+                }
+            }
+            console.log(devicelist[i][j][k] +"     " + i + "     " + j + "     " +k+"  번째");
+        }
+        console.log("-----------------------j"+ j +"j-------------------");
+    }
+    console.log("==================="+i+"번째 디바이스========================\n\n");
+%>
+            </td>
+        </tr>
+<%
+    } 
+%>
+
+
+        </thead>
+        <!--        <tbody id="my-tbody"></tbody>-->
+    </table>
+
+
+
+
+
+    <!--db 인덱스 확인용-->
+    <% /*for (let i in devicelist){
+            for(let j in devicelist[i]){
+                for(let k in devicelist[i][j]){
+                        if(j==2){
+                        for(let m in devicelist[i][j][k]){
+                            console.log(i);
+                            console.log((m) +"     " + i + "     " + j + "     " +k+ "     " +m+"  번째");
+                    console.log(devicelist[i][j][k][m] +"     " + i + "     " + j + "     " +k+ "     " +m+"  번째" );
+                        }
+                    }
+                    console.log(devicelist[i][j][k] +"     " + i + "     " + j + "     " +k+"  번째");
+                }
+                console.log("-----------------------"+ j +"-------------------");
+            }
+        console.log("==================="+i+"번째 디바이스========================\n\n");
+        } */%>
+
+
+
+</body>
+
+</html>

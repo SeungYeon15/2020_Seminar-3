@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+
+    <title>ejs 테스트</title>
+
+    <link href="./semantic.min.css" rel="stylesheet">
+    <script src="./jquery-3.1.1.min.js"></script>
+    <script src="./semantic.min.js"></script>
+
+
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid gray;
+        }
+
+    </style>
+
+    <button class="ui blue basic button" onclick="add_row()">Add Row</button>
+    <button class="ui red basic button" onclick="delete_row()">Del Row</button>
+    <hr>
+    <hr>
+
+
+    <script>
+        function btn_delete() {
+            var my_tbody = document.getElementById('my-tbody');
+            if (my_tbody.rows.length < 1) return;
+            // my_tbody.deleteRow(0); // 상단부터 삭제
+            my_tbody.deleteRow(my_tbody.rows.length - 1); // 하단부터 삭제
+        }
+
+        function add_row() {
+            var my_tbody = document.getElementById('my-tbody');
+            // var row = my_tbody.insertRow(0); // 상단에 추가
+            var row = my_tbody.insertRow(my_tbody.rows.length); // 하단에 추가
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            var cell3 = row.insertCell(2);
+            var cell4 = row.insertCell(3);
+            var cell5 = row.insertCell(4);
+            cell1.innerHTML = '<div class="ui input "> <input type = "text"placeholder = "Name" ></div>';
+            cell2.innerHTML = '<div class="ui input "> <input type = "text"placeholder = "Name" ></div>';
+            cell3.innerHTML = '<div class="ui input "> <input type = "text"placeholder = "Name" ></div>';
+            cell4.innerHTML = '<div class="ui input "> <input type = "text"placeholder = "Name" ></div>';
+            cell5.innerHTML = '<button type="button" class="btn_delete" onclick="btn_delete()">Delete</button>';
+        }
+
+        function delete_row() {
+            var my_tbody = document.getElementById('my-tbody');
+            if (my_tbody.rows.length < 1) return;
+            // my_tbody.deleteRow(0); // 상단부터 삭제
+            my_tbody.deleteRow(my_tbody.rows.length - 1); // 하단부터 삭제
+        }
+
+    </script>
+</head>
+
+<body>
+    <div class="ui sizer vertical segment">
+        <div class="ui huge header">표 만들기</div>
+        <p></p>
+    </div>
+    <table class="ui striped table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date Joined</th>
+                <th>E-mail</th>
+                <th>Called</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody id="my-tbody"></tbody>
+    </table>
+
+</body>
+
+</html>

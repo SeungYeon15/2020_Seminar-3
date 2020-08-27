@@ -1,0 +1,12 @@
+<% for (let i in devicelist){
+            for(let j in devicelist[i]){
+                for(let k in devicelist[i][j]){
+                        if(devicelist[i][j][k]!=null){ 
+                            %><li><%= devicelist[i][j][k]%></li><%
+                    }
+                }
+                
+            }
+    
+        
+        } %>

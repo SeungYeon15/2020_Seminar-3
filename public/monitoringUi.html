@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=euc-kr">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+    <title>Monitoring</title>
+
+    <script src="jquery-3.1.1.min.js"></script>
+
+    <script>
+        $(function() {
+            $('#switch').click(function() {
+                if ($(this).is(":checked")) {
+                    $(this).parent().parent().parent().children('.Light_Switch').html('<p>On</p>');
+                } else {
+                    $(this).parent().parent().parent().children('.Light_Switch').html('<p>Off</p>');
+                }
+
+                if ($("input:checkbox[name=complete_yn]").is(":class") == true) {
+                    $("input:checkbox[name=complete_yn]").prop("checked", false);
+                }
+            });
+        });
+        $(document).ready(function() {
+            $(".slideBtn> input").change(function() {
+                if ($(this).is(":checked")) {
+                    $(this).parent().addClass("skyblue");
+                } else {
+                    $(this).parent().removeClass("skyblue");
+                }
+            });
+        });
+        
+    </script>
+
+    <!--가운데 정렬-->
+    <style>
+        #div3 {
+            text-align: center;
+        }
+
+    </style>
+
+
+
+    <!--폰트스타일-->
+    <style>
+        h3 {
+            font-size: 1.3rem;
+        }
+
+        p {
+            font-size: 300%;
+            font-weight: 1000;
+        }
+
+    </style>
+
+    <!--토글키 스타일-->
+    <style>
+        .slideBtn {
+            position: relative;
+            display: block;
+            width: 60px;
+            height: 34px;
+            background: #ccc;
+        }
+
+        .slideBtn>span {
+            position: absolute;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background: white;
+            transition: .4s;
+            cursor: pointer;
+        }
+
+        .slideBtn>input:checked+span {
+            transform: translateX(26px);
+        }
+
+        .slideBtn>input {
+            opacity: 0;
+        }
+
+        .skyblue {
+            background: skyblue;
+        }
+
+    </style>
+
+    <!--토글키 정렬-->
+    <style type="text/css">
+        .vi {
+            border-radius: 5px;
+            border-width: 2px;
+            margin-bottom: 50px;
+            padding: 15px;
+            width: 65px
+        }
+
+        .align-center {
+            text-align: center;
+        }
+
+        .align-justify {
+            text-align: justify;
+        }
+
+        .margin-center {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+    </style>
+    
+
+</head>
+
+<body>
+    <br><br><br><br><br>
+    <div id="div3" style="height: auto; width: 100%; border:10px solid black;"><img src="images/humidity.png" alt="">
+        <p>습도: </p>
+    </div>
+    <div id="div3" style="height: auto; width: 100%; border:10px solid black;"><img src="images/temperature_white.png" alt="">
+        <p>온도: </p>
+    </div>
+    <div id="div3" style="height: auto; width: 100%; border:10px solid black;"><img src="images/Illuminance.png" alt="">
+        <p>조도: </p>
+    </div>
+
+    <div id="div3" style="height: auto; width: 100%; border:10px solid black;">
+        <p>Light Switch</p>
+        <span class='Light_Switch'>
+            <p>Off</p>
+        </span>
+        <div id="" class="margin-center vi">
+            <label class="slideBtn">
+                <input type="checkbox" id='switch' name="complete_yn"><span></span>
+            </label>
+        </div>
+    </div>
+
+
+
+</body>
+
+</html>
