@@ -5,7 +5,7 @@
 ### 1. node.js 설치   
 https://nodejs.org/ko/ (LTS버전 권장)
 
-### 2. cmd    
+### 2. cmd 실행   
 [Windows 키 + R]로 실행창 띄우고 "cmd" 입력 후 실행
 
 ### 3. cmd로 폴더 경로 지정   
