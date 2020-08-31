@@ -17,7 +17,7 @@ cmd에서 cd(Change Directory)명령어로 클론폴더 경로 지정
 ### 5. "node server2.js"로 서버 실행하기   
 모듈설치를 전부 완료하면 클론폴더 현재 경로에서 "node server2.js"로 서버 실행
 
-### 6. "local:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
+### 6. "http://localhost:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
 "[현재 컴퓨터 IP] : [현재 현재 할당된 포트번호] / main" 으로 메인 웹페이지 접속
 
 
