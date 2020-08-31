@@ -31,7 +31,7 @@ Brackets: http://brackets.io/
 
 ### 3. server2.js 파일 안에서 서버 수정 가능   
 app.set('port', process.env.PORT || 3000); --> 여기서 포트 번호 변경 가능      
-#### 3-1 포트번호를 14000으로 바꾸고 싶을때   
+#### 3-1 예시) 포트번호를 14000으로 바꾸고 싶을때   
 ex) app.set('port', process.env.PORT || 14000);   
 
 ### 5. Main페이지, Monitoring페이지, Log페이지 관리   
