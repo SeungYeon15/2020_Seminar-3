@@ -36,10 +36,10 @@ ex) app.set('port', process.env.PORT || 14000);
 
 ### 5. Main페이지, Monitoring페이지, Log페이지 관리   
 #### views폴더 안에 있음   
-##### 5-1 Main 페이지:
+##### 5-1 Main 페이지
 ###### mainPage.ejs   
 ##### 5-2 Monitoring페이지   
 ###### PC버전: monitoringUiMobile.ejs   
 ###### Mobile버전: monitoringUiPC.ejs   
-##### 5-3 Log페이지:
+##### 5-3 Log페이지
 ###### log.ejs   
