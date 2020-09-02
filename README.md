@@ -1,6 +1,6 @@
 # 2020_Seminar_WebUi
 
-서버 실행방법
+[Window] 서버 실행방법
 ===========
 ### 1. node.js 설치   
 https://nodejs.org/ko/ (LTS버전 권장)
@@ -21,7 +21,7 @@ cmd에서 cd(Change Directory)명령어로 클론폴더 경로 지정
 "[현재 컴퓨터 IP] : [현재 현재 할당된 포트번호] / main" 으로 메인 웹페이지 접속
 
 
-서버 관리 및 포트번호 할당하기
+[Window]서버 관리 및 포트번호 할당하기
 ===========================
 ### 1. Visual Studio Code 나 Brackets 설치 및 실행   
 Visual Studio Code: https://code.visualstudio.com/download   
