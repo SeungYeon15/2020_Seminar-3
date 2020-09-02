@@ -28,7 +28,7 @@ console.log("뷰 엔진이 ejs로 설정되었습니다.");
 app.use(express.static(path.join(__dirname, "public")));
 
 //===== 서버 변수 설정 및 static으로 public 폴더 설정  =====//
-app.set("port", process.env.PORT || 3000);
+app.set("port", process.env.PORT || 15000);
 
 // public 폴더를 static으로 오픈
 app.use("/public", static(path.join(__dirname, "public")));
@@ -333,7 +333,7 @@ let getLog = function (item_id, callback) {
   });
 };
 
-app.get("/main", function (req, res) {
+app.get("", function (req, res) {
   //데이터 받아오기
   getSensorList(function (err, devicelist) {
     if (err) {
