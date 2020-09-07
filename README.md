@@ -15,13 +15,23 @@ cmd에서 cd(Change Directory)명령어로 클론폴더 경로 지정
 클론폴더 현재 경로에서 "npm install"을 입력하여 현재 저장되어 있는 모듈 자동 설치
 
 ### 5. "node server2.js"로 서버 실행하기   
-모듈설치를 전부 완료하면 클론폴더 현재 경로에서 "node server2.js"로 서버 실행
+모듈설치를 전부 완료하면 클론폴더 현재 경로에서 "node server.js"로 서버 실행
 
-### 6. "http://localhost:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
+### 5-1. Background에서 Server 구동   
+현재 경로에서 "npm install forever -g" 서버로 forever 모듈 설치   
+#### 5-1-1 forever 모듈로 Background Server 실행   
+##### "forever start server.js"   
+#### 5-1-2 forever 모듈로 실행한 Background Server 종료   
+##### "forever stop server.js"   
+#### 5-1-3 forever로 실행한 서버 목록 및 로그   
+##### "forever list"   
+
+### 7. "http://localhost:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
 "[현재 컴퓨터 IP] : [현재 현재 할당된 포트번호] / main" 으로 메인 웹페이지 접속
 
 
-[Window]서버 관리 및 포트번호 할당하기
+
+[Window]서버 관리
 ===========================
 ### 1. Visual Studio Code 나 Brackets 설치 및 실행   
 Visual Studio Code: https://code.visualstudio.com/download   
@@ -43,3 +53,4 @@ ex) app.set('port', process.env.PORT || 14000);
 ###### Mobile버전: monitoringUiPC.ejs   
 ##### 5-3 Log페이지
 ###### log.ejs   
+
