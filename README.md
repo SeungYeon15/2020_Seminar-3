@@ -26,7 +26,7 @@ cmd에서 cd(Change Directory)명령어로 클론폴더 경로 지정
 #### 5-1-3 forever로 실행한 서버 목록 및 로그   
 ##### "forever list"   
 
-### 7. "http://localhost:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
+### 6. "http://localhost:3000/main"로 웹페이지 접속(해당 컴퓨터 IP)   
 "[현재 컴퓨터 IP] : [현재 현재 할당된 포트번호] / main" 으로 메인 웹페이지 접속
 
 
@@ -44,13 +44,13 @@ app.set('port', process.env.PORT || 3000); --> 여기서 포트 번호 변경 �
 #### 3-1 예시) 포트번호를 14000으로 바꾸고 싶을때   
 ex) app.set('port', process.env.PORT || 14000);   
 
-### 5. Main페이지, Monitoring페이지, Log페이지 관리   
+### 4. Main페이지, Monitoring페이지, Log페이지 관리   
 #### views폴더 안에 있음   
-##### 5-1 Main 페이지
+##### 4-1 Main 페이지
 ###### mainPage.ejs   
-##### 5-2 Monitoring페이지   
+##### 4-2 Monitoring페이지   
 ###### PC버전: monitoringUiMobile.ejs   
 ###### Mobile버전: monitoringUiPC.ejs   
-##### 5-3 Log페이지
+##### 4-3 Log페이지
 ###### log.ejs   
 
