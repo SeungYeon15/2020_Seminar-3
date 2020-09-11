@@ -14,7 +14,7 @@ cmd에서 cd(Change Directory)명령어로 클론폴더 경로 지정
 ### 4. "npm install"로 모듈 자동설치하기   
 클론폴더 현재 경로에서 "npm install"을 입력하여 현재 저장되어 있는 모듈 자동 설치
 
-### 5. "node server2.js"로 서버 실행하기   
+### 5. "node server.js"로 서버 실행하기   
 모듈설치를 전부 완료하면 클론폴더 현재 경로에서 "node server.js"로 서버 실행
 
 ### 5-1. Background에서 Server 구동   
@@ -39,7 +39,7 @@ Brackets: http://brackets.io/
 
 ### 2. 클론폴더 경로로 폴더 열기   
 
-### 3. server2.js 파일 안에서 서버 수정 가능   
+### 3. server.js 파일 안에서 서버 수정 가능   
 app.set('port', process.env.PORT || 15000); --> 여기서 포트 번호 변경 가능      
 #### 3-1 예시) 포트번호를 14000으로 바꾸고 싶을때   
 ex) app.set('port', process.env.PORT || 14000);   
