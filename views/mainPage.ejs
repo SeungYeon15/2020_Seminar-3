@@ -41,7 +41,6 @@
         var filter = "win16|win32|win64|mac|macintel";
         if (navigator.platform) {
             if (filter.indexOf(navigator.platform.toLowerCase()) < 0) {
-                alert("Mobile 접속");
                 console.log('=============\nmobile 접속\n=============');
 
                 $(function() {
@@ -51,7 +50,6 @@
                 });
 
             } else {
-                alert("PC접속");
                 console.log('=============\npc 접속\n=============');
                 $(function() {
 //                  $("a").attr("href", "pc")
