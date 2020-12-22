@@ -18,6 +18,8 @@ var expressSession = require("express-session");
 // 익스프레스 객체 생성
 var app = express();
 
+let fs = require("fs");
+let DB_info = JSON.parse(fs.readFileSync("DB_info.json").toString());
 let mysql = require("mysql");
 let device_list = new Object();
 
@@ -28,7 +30,7 @@ console.log("뷰 엔진이 ejs로 설정되었습니다.");
 app.use(express.static(path.join(__dirname, "public")));
 
 //===== 서버 변수 설정 및 static으로 public 폴더 설정  =====//
-app.set("port", process.env.PORT || 10203);
+app.set("port", process.env.PORT || 15000);
 
 // public 폴더를 static으로 오픈
 app.use("/public", static(path.join(__dirname, "public")));
@@ -36,7 +38,7 @@ app.use("/public", static(path.join(__dirname, "public")));
 // json타입으로 파싱하게 설정
 app.use(bodyParser.json());
 
-//===== 404 에러 페이지 처리 =====//
+// ===== 404 에러 페이지 처리 =====//
 var errorHandler = expressErrorHandler({
   static: {
     404: "./public/404.html",
@@ -44,19 +46,29 @@ var errorHandler = expressErrorHandler({
 });
 
 let sensor_model_pool = mysql.createPool({
-  host: "203.234.62.115",
-  port: 3306,
-  user: "root",
-  password: "1234",
-  database: "MetadataRegistry",
+  host: DB_info[0].host,
+  port: DB_info[0].port,
+  user: DB_info[0].user,
+  password: DB_info[0].password,
+  database: DB_info[0].database,
   connectionLimit: 10,
   debug: false, //데이터베이스 처리 과정을 로그로 남김
 });
 
+let deviceRegistry_pool = mysql.createPool({
+  host: DB_info[1].host,
+  port: DB_info[1].port,
+  user: DB_info[1].user,
+  password: DB_info[1].password,
+  database: DB_info[1].database,
+  connectionLimit: 10,
+  debug: false, //데이터베이스 처리 과정을 로그로 남김
+})
+
 app.use(errorHandler);
 
 let getDeviceList = function (callback) {
-  sensor_model_pool.getConnection(function (err, connection) {
+  deviceRegistry_pool.getConnection(function (err, connection) {
     if (err) {
       connection.release();
       callback(err, null);
@@ -154,14 +166,15 @@ let getDeviceList = function (callback) {
 };
 
 let getSensorList = function (callback) {
-  sensor_model_pool.getConnection(function (err, connection) {
+  deviceRegistry_pool.getConnection(function (err, connection) {
     if (err) {
+      console.log(err);
       connection.release();
       callback(err, null);
       return;
     }
     connection.query(
-      "SELECT item_id, device_name FROM device_register",
+      "SELECT item_id, device_name FROM device_list",
       function (err, results) {
         if (!err) {
           getDeviceList(function (err, device_list) {
@@ -194,14 +207,14 @@ let getSensorList = function (callback) {
 };
 
 let getSensorTable = function (id, callback) {
-  sensor_model_pool.getConnection(function (err, connection) {
+  deviceRegistry_pool.getConnection(function (err, connection) {
     if (err) {
       connection.release();
       callback(err, null);
       return;
     }
     connection.query(
-      "SELECT item_id, table_name FROM device_register",
+      "SELECT item_id, table_name FROM device_list",
       function (err, results) {
         if (!err) {
           for (let i in results) {
@@ -378,7 +391,6 @@ app.get("/pc", function (req, res) {
 
     deviceId = req.query.id || req.body.id;
     getNowData(deviceId, function (err, results) {
-      //            console.log(results);
       res.render("monitoringUiPC", {
         results,
       });
