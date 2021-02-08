@@ -7,35 +7,205 @@
 
     <title>Device Monitoring</title>
 
-
+    <link rel="stylesheet" href="//pro.fontawesome.com/releases/v5.10.0/css/all.css">
     <link href="./semantic.min.css" rel="stylesheet">
+    
+    <style>
+        .hidden {
+            display:none;
+        };
+    
+    </style>
     <script src="./jquery-3.1.1.min.js"></script>
-    <script src="./semantic.min.js"></script>
+
 
     <script>
         //status - ID형태라 맨위만 됨(수정 요망)
-        $(function() {
-            $("#actuator").on("change", function() {
-                $("#stat").text($(this).val())
+        //        $(function() {
+        //            $("#actuator").on("change", function() {
+        //                $("#stat").text($(this).val())
+        //
+        //            })
+        //        })
 
-            })
-        })
+        function copy_tr() {
+            $($('tr')[1]).clone(true).appendTo('thead')
+        }
 
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
         //Actuator On/Off 스위치
-        $(function() {
-            $('.ui button[name=button]').click(function() {
-                if ($(this).html() == 'Turn on') {
-                    $(this).html('Turn off');
-                } else {
-                    $(this).html('Turn on');
+        function change_actuator(target) {
+            var cur_state = $(event.target).attr("is_on")
+
+            if (cur_state == 'true') {
+                $(target).attr("is_on", 'false')
+                $(target).removeClass('fas')
+                $(target).addClass('far')
+                return 'false'
+            } else {
+                $(target).attr("is_on", 'true')
+                $(target).removeClass('far')
+                $(target).addClass('fas')
+                return 'true'
+            }
+        }
+
+        $(function() { //Acuator List 클릭 이벤트 -> get방식으로 서버에 보냄
+            $('.icon').click((event) => {
+                var cur_device = $(event.target).attr("name")
+                console.log("name: ", $(event.target).attr("name"), "\nevent.target: ", event.target)
+
+                if (cur_device == 'led') {
+                    var cur_state = change_actuator(event.target);
+                    if (cur_state == 'true') {
+                        $.get('/on', (data, status) => {
+                            console.log("status : ", status)
+                            console.log("!!true!!!")
+                        })
+                        
+                    } else {
+                        $.get('/off', () => {
+                            console.log("status : ", status)
+                            console.log("!!false!!!")
+                        })
+                        
+                    }
+
+                } else if (cur_device == 'motor') {
+
                 }
-                if ($(this).prev().html() == 'On') {
-                    $(this).prev().html('Off');
-                } else {
-                    $(this).prev().html('On');
-                }
-            });
+            })
+
+            function refresh() {
+                $.get("sensor_data", function(res) {
+                    //                $(".fa-lightbulb").attr("value", "1");
+                    //                $(".fa-cog").attr("value", "1");
+
+
+                    //                    if(Object.keys(devicelist) == 'item_id')
+                    
+
+                    //                    if (Object.values(res['devicelist'][1][2][1])==true) {
+
+
+                    //MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
+                    /* if ($('.act_list').attr('value') ==4) {
+                        $('.act_list').append("<div class='icon'><i class='fas fa-lightbulb fa-2x' name='led' is_on='true' value=''></i></div><div class='icon'><i class='fas fa-cog fa-2x' name='motor' is_on='true' value=''></i></div>")
+                    } */
+                    //NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN
+
+
+                    console.log("sensor_data: ", res['devicelist'])
+                    console.log("device_list Key: ", Object.keys(res['devicelist']))
+                    console.log("results: ", res['results'])
+                    if ($('tr').length - 1 != Object.keys(res['devicelist']).length)
+                        for (var i = 0; i < Object.keys(res['devicelist']).length - 1; i++)
+                            copy_tr();
+
+                    var cnt = 0
+
+                    //                    console.log(res['devicelist']);
+                    for (var device in res['devicelist']) {
+                        console.log(res['devicelist'][device][0].join().substring(1))
+                        console.log($('tr')[device])
+                        // $( $('tr')[cnt+1].children[0] ).text(res['devicelist'][device][3].join().substring(1))  // Change Device
+                        $($($('tr')[cnt + 1]).find('.ui')[0]).val(res['devicelist'][device][3])
+
+                        $($($('tr')[cnt + 1]).find('.ui')[0]).prev().attr('value', cnt + 1) // Change Device value
+                        $($($('tr')[cnt + 1]).find('.ui')[1]).prev().attr('value', cnt + 1) // Change Monitoring value
+
+
+                        $('.default')[cnt]
+                        console.log("cnt : ", cnt, $('.menu')[cnt])
+
+
+                        //                        <div class="icon">
+                        //                            <i class="fas fa-lightbulb fa-2x" name="led" is_on="true" value=""></i>
+                        //                        </div>
+                        //                        <div class="icon">
+                        //                            <i class="fas fa-cog fa-2x" name="motor" is_on="true" value=""></i>
+                        //                        </div>
+
+
+
+
+                        //$($('.menu')[0]).append("<div class='item' data-value='[object Object]'>123</div>")
+                        //$($('.menu')[1]).append('<div class="item" data-value="null">45</div>')
+
+
+                        $($($('tr')[cnt + 1]).find('.ui')[0]).val(res['devicelist'][device][3])
+                        $($('tr')[cnt + 1].children[2]).text(res['devicelist'][device][0].join().substring(1)) // Change Sensor List
+
+
+                        //                        change_ac('led', true)
+
+
+                        //                        $($($('tr')[cnt + 1]).find('.ui')[3]).click(function() { // Change Switch Button
+                        //                            if ($(this).html() == 'Turn on') {
+                        //                                $(this).html('Turn off');
+                        //                                $(".turn").attr("action", "on");
+                        //
+                        //                            } else {
+                        //                                $(this).html('Turn on');
+                        //                                $(".turn").attr("action", "off");
+                        //
+                        //
+                        //                            }
+                        //                        })
+                        //                if ($(this).parent().prev().html() == 'Off') {
+                        /* if ($sw[0].led == 1) {
+                            $(this).parent().prev().html('On');
+                        } else {
+                            $(this).parent().prev().html('Off');
+                        } */
+
+
+                        cnt += 1;
+                    }
+                    
+                    dict = {}
+                    
+                    console.log("actlist : " , Object.values(res.actlist))
+                    
+                    for(var actuator in  res.actlist){
+                        var item_id = res.actlist[actuator]['item_id']
+                        console.log(item_id)
+                        
+                        sub_act_list = ["led", "motor"]
+                        
+                        sub_act_list.forEach(function(sub_act){
+                            console.log('sub_act : ', sub_act)
+                            console.log('item : ', res.actlist[actuator][sub_act])
+                            if(res.actlist[actuator][sub_act]){
+                                    $($($('tr')[item_id]).find('.icon .' + sub_act).toggleClass("hidden"))
+                            }
+                        })
+                        
+                    }
+
+                    // $($('tr')[1].children[2] ).text()
+
+                    /* if (res['results'][0].led == 1) {
+                        $(this).parent().prev().html('On');
+                    } else {
+                        $(this).parent().prev().html('Off');
+                    } */
+
+                })
+            }
+
+
+            refresh();
+            //            $('.ui.dropdown').dropdown('hidden');
+//             setInterval(refresh, 1000);
         });
+
+
+        ///////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
 
         //모바일, PC구분
         var filter = "win16|win32|win64|mac|macintel";
@@ -44,21 +214,24 @@
                 console.log('=============\nmobile 접속\n=============');
 
                 $(function() {
-//                  $("a").attr("href", "mo")
+                    //                  $("a").attr("href", "mo")
                     $(".navi").attr("action", "mo");
-                    
+
                 });
 
             } else {
                 console.log('=============\npc 접속\n=============');
+
                 $(function() {
-//                  $("a").attr("href", "pc")
+                    //                  $("a").attr("href", "pc")
                     $(".navi").attr("action", "pc");
                 });
             };
         }
 
     </script>
+
+    <script src="./semantic.min.js"></script>
 
     <!--토글키 스타일-->
     <style>
@@ -101,6 +274,15 @@
             padding: 1rem;
         }
 
+        .icon {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .icon:hover {
+            cursor: pointer;
+        }
+
     </style>
 
 </head>
@@ -118,58 +300,98 @@
                 <th>Sensor List</th>
                 <th>Actuator List</th>
             </tr>
-<%
+            <%
     var count=1;
     for (let device in devicelist){
         if(devicelist[device] != undefined || devicelist[device] != null){
 %>
             <tr>
                 <td>
-<!--                <a href="tempA.html"><%= '[' + device + '] ' + devicelist[device][3]%></a>-->
-                    <form action="log" method="get"><input type='hidden' name= "id" value="<%=device%>"><input type="submit" value="<%= '[' + count++ + '] ' + devicelist[device][3]%>" class="ui button"></form>
+                    <!--                <a href="tempA.html"><%= '[' + device + '] ' + devicelist[device][3]%></a>-->
+                    <form action="log" method="get">
+                        <input type='hidden' name="id" value="<%=device%>">
+                        <input type="submit" value="<%= '[' + count++ + '] ' + devicelist[device][3]%>" class="ui button">
+                    </form>
                 </td>
-                
+
                 <td>
-<!--                <a href=""><button class="ui button">Monitoring</button></a>-->                
+                    <!--                <a href=""><button class="ui button">Monitoring</button></a>-->
                     <form class="navi" action="" method="get">
-                        <input type='hidden' name= "id" value="<%=device%>">
+                        <input type='hidden' name="id" value="<%=device%>">
                         <input type="submit" value="Monitoring" class="ui button">
                     </form>
                 </td>
                 <td>
-<%=  
+                    <%=  
                 devicelist[device][0].filter(function(el) {
                     return el != null
                 }).toString().replace(/,/g, ', '); 
 %>
+
+                </td>
+
+                <td>
+
+                    <%
+//                    console.log("Object.keys는? ",Object.values(devicelist));
+                    //if(Object.keys(devicelist) == '1'){%>
+
+                    <form class="act_list" value="<%=device%>"></form>
+
+
+                    <div class="icon">
+                        <i class="fas fa-lightbulb fa-2x led hidden" name="led" is_on="true" value=""></i>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-cog fa-2x motor hidden" name="motor" is_on="true" value=""></i>
+                    </div>
+
+                    <% //  }
+                    %>
+
+
+
+                </td>
+                <!--
                 </td>
                 <td>
                     <select id="actuator" class="ui fluid search dropdown">
                         <option value="">Actuator</option>
-<%
-                    for(let actuator in devicelist[device][2]) {
-                        if(devicelist[device][2][actuator] != null) {
-                            let actuator_key = Object.keys(devicelist[device][2][actuator])
-                            let actuator_val = Object.values(devicelist[device][2][actuator])
-                            if(actuator_val=="") {
-                                actuator_val = "null"
-                            }
+-->
+                <%
+//                    for(let actuator in devicelist[device][2]) {
+//                        if(devicelist[device][2][actuator] != null) {
+//                            let actuator_key = Object.keys(devicelist[device][2][actuator])
+//                            let actuator_val = Object.values(devicelist[device][2][actuator])
+//                            if(actuator_val=="") {
+//                                actuator_val = "null"
+//                            }
 %>
-                        <option id="options" value="<%= actuator_val%>"><%= actuator_key %></option>
-<%
-                        }
-                    } 
+                <!--                        <option id="options" value="<%= //actuator_val%>"><%= //actuator_key %></option>-->
+                <%
+//                        }
+//                    } 
 %>
+                <!--
                     </select>
                     <script>
                         $('.ui.dropdown').dropdown('hidden');
-
                     </script>
-                    Status: <div id="stat">N/A</div>
-                    <button class="ui button" name="button">Turn on</button>
-                </td>
+-->
+                <!--stat을 DB에서 받아와야 함-->
+                <!--            Status: <div id="stat">N/A</div>-->
+
+
+
+                <!--클라이언트로 action의 get방식으로 보냄-->
+                <!--DB에서 1일경우 Turn on으로, 0일 경우 Turn off로 바꿔야 함-->
+                <!-------------------------------------------------------------------->
+                <!--                    <button class="ui button" name="button">Turn on</button>-->
+                <!--            <button class="ui button" name="button">Turn off</button>-->
+                <!-------------------------------------------------------------------->
+
             </tr>
-<%
+            <%
             }
      }
 %>
@@ -178,7 +400,8 @@
     </table>
     <%//console.log(devicelist[1])%>
     <%//console.log("현재 불러와진 deviceId: " + Object.keys(devicelist))%>
-
+    <% // console.log(sw[0].led);%>
+    <%//console.log(sw[0].led);%>
 </body>
 
 </html>
