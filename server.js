@@ -1,13 +1,13 @@
 // Express 기본 모듈 불러오기
 var express = require("express"),
-  http = require("http"),
-  path = require("path");
+    http = require("http"),
+    path = require("path");
 
 // Express의 미들웨어 불러오기
 var bodyParser = require("body-parser"),
-  cookieParser = require("cookie-parser"),
-  static = require("serve-static"),
-  errorHandler = require("errorhandler");
+    cookieParser = require("cookie-parser"),
+    static = require("serve-static"),
+    errorHandler = require("errorhandler");
 
 // 에러 핸들러 모듈 사용
 var expressErrorHandler = require("express-error-handler");
@@ -40,393 +40,539 @@ app.use(bodyParser.json());
 
 // ===== 404 에러 페이지 처리 =====//
 var errorHandler = expressErrorHandler({
-  static: {
-    404: "./public/404.html",
-  },
+    static: {
+        404: "./public/404.html",
+    },
 });
 
+// ===== DB: DeviceMeasurement =====//
 let sensor_model_pool = mysql.createPool({
-  host: DB_info[0].host,
-  port: DB_info[0].port,
-  user: DB_info[0].user,
-  password: DB_info[0].password,
-  database: DB_info[0].database,
-  connectionLimit: 10,
-  debug: false, //데이터베이스 처리 과정을 로그로 남김
+    host: DB_info[0].host,
+    port: DB_info[0].port,
+    user: DB_info[0].user,
+    password: DB_info[0].password,
+    database: DB_info[0].database,
+    connectionLimit: 10,
+    debug: false, //데이터베이스 처리 과정을 로그로 남김
 });
 
+// ===== DB: DeviceRegistry =====//
 let deviceRegistry_pool = mysql.createPool({
-  host: DB_info[1].host,
-  port: DB_info[1].port,
-  user: DB_info[1].user,
-  password: DB_info[1].password,
-  database: DB_info[1].database,
-  connectionLimit: 10,
-  debug: false, //데이터베이스 처리 과정을 로그로 남김
+    host: DB_info[1].host,
+    port: DB_info[1].port,
+    user: DB_info[1].user,
+    password: DB_info[1].password,
+    database: DB_info[1].database,
+    connectionLimit: 10,
+    debug: false, //데이터베이스 처리 과정을 로그로 남김
 })
+//console.log(DB_info[0]);
+//console.log(DB_info[1]);
 
 app.use(errorHandler);
 
 let getDeviceList = function (callback) {
-  deviceRegistry_pool.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback(err, null);
-      return;
-    }
-    connection.query(
-      "SELECT item_id, metadata_key, metadata_value FROM specific_metadata",
-      function (err, results) {
-        if (!err) {
-          let device_list_key;
-          let device_list = new Object();
-          let sensor = [null];
-          let unit = [null];
-          let actuator = [null];
-          let sen_count = 0;
-          let unit_count = 0;
-          let act_count = 0;
-          let i = 0;
-          let count = 0;
-
-          for (i in results) {
-            if (
-              device_list_key != results[i].item_id &&
-              device_list_key != undefined
-            ) {
-              let arr = new Array();
-
-              temp = device_list_key;
-              sensor.length = sen_count + 1;
-              unit.length = unit_count + 1;
-              actuator.length = act_count + 1;
-
-              arr.push(Array.prototype.slice.call(sensor));
-              arr.push(Array.prototype.slice.call(unit));
-              arr.push(Array.prototype.slice.call(actuator));
-
-              device_list_key = results[i].item_id;
-              device_list[temp] = Array.prototype.slice.call(arr);
-              arr.length = 0;
-              sen_count = 0;
-              unit_count = 0;
-              act_count = 0;
-            }
-            if (device_list_key == undefined) {
-              device_list_key = results[i].item_id;
-            }
-            let type = results[i].metadata_key.split("-");
-
-            if (type[0] === "sensor") {
-              let index = Number(type[1]);
-              sensor[index] = results[i].metadata_value; //index 1에서부터 sensor name 저장함.
-              sen_count += 1;
-            } else if (type[0] === "sensor_unit") {
-              let index = Number(type[1]);
-              unit[index] = results[i].metadata_value;
-              unit_count += 1;
-            } else if (type[0] === "actuator") {
-              let index = Number(type[1]);
-              actuator[index] = {};
-              actuator[index][results[i].metadata_value] = [];
-              act_count += 1;
-            } else if (type[0] === "actuator_act") {
-              let act_kind = Number(type[1]);
-              for (let j in actuator[act_kind]) {
-                actuator[act_kind][j].push(results[i].metadata_value);
-              }
-            } else {
-              count += 1;
-              //제외한 데이터 확인용
-              //console.log("제외: " + type[0] + "  " + count)
-            }
-          }
-          let arr = new Array();
-
-          sensor.length = sen_count + 1;
-          unit.length = unit_count + 1;
-          actuator.length = act_count + 1;
-
-          arr.push(sensor);
-          arr.push(unit);
-          arr.push(actuator);
-
-          device_list[device_list_key] = Array.prototype.slice.call(arr);
-
-          callback(null, device_list);
-
-          connection.release();
-          return;
-        } else {
-          console.log(err.stack);
+    deviceRegistry_pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            callback(err, null);
+            return;
         }
-      }
-    );
-  });
+        connection.query(
+            "SELECT item_id, metadata_key, metadata_value FROM specific_metadata",
+            function (err, results) {
+                if (!err) {
+                    let device_list_key;
+                    let device_list = new Object();
+                    let sensor = [null];
+                    let unit = [null];
+                    let actuator = [null];
+                    let sen_count = 0;
+                    let unit_count = 0;
+                    let act_count = 0;
+                    let i = 0;
+                    let count = 0;
+
+                    for (i in results) {
+                        if (
+                            device_list_key != results[i].item_id &&
+                            device_list_key != undefined
+                        ) {
+                            let arr = new Array();
+
+                            temp = device_list_key;
+                            sensor.length = sen_count + 1;
+                            unit.length = unit_count + 1;
+                            actuator.length = act_count + 1;
+
+                            arr.push(Array.prototype.slice.call(sensor));
+                            arr.push(Array.prototype.slice.call(unit));
+                            arr.push(Array.prototype.slice.call(actuator));
+
+                            device_list_key = results[i].item_id;
+                            device_list[temp] = Array.prototype.slice.call(arr);
+                            arr.length = 0;
+                            sen_count = 0;
+                            unit_count = 0;
+                            act_count = 0;
+                        }
+                        if (device_list_key == undefined) {
+                            device_list_key = results[i].item_id;
+                        }
+                        let type = results[i].metadata_key.split("-");
+
+                        if (type[0] === "sensor") {
+                            let index = Number(type[1]);
+                            sensor[index] = results[i].metadata_value; //index 1에서부터 sensor name 저장함.
+                            sen_count += 1;
+                        } else if (type[0] === "sensor_unit") {
+                            let index = Number(type[1]);
+                            unit[index] = results[i].metadata_value;
+                            unit_count += 1;
+                        } else if (type[0] === "actuator") {
+                            let index = Number(type[1]);
+                            actuator[index] = {};
+                            actuator[index][results[i].metadata_value] = [];
+                            act_count += 1;
+                        } else if (type[0] === "actuator_act") {
+                            let act_kind = Number(type[1]);
+                            for (let j in actuator[act_kind]) {
+                                actuator[act_kind][j].push(results[i].metadata_value);
+                            }
+                        } else {
+                            count += 1;
+                            //제외한 데이터 확인용
+                            //console.log("제외: " + type[0] + "  " + count)
+                        }
+                    }
+                    let arr = new Array();
+
+                    sensor.length = sen_count + 1;
+                    unit.length = unit_count + 1;
+                    actuator.length = act_count + 1;
+
+                    arr.push(sensor);
+                    arr.push(unit);
+                    arr.push(actuator);
+                    device_list[device_list_key] = Array.prototype.slice.call(arr);
+
+                    callback(null, device_list);
+
+                    connection.release();
+                    return;
+                } else {
+                    console.log(err.stack);
+                }
+            }
+        );
+    });
 };
 
 let getSensorList = function (callback) {
-  deviceRegistry_pool.getConnection(function (err, connection) {
-    if (err) {
-      console.log(err);
-      connection.release();
-      callback(err, null);
-      return;
-    }
-    connection.query(
-      "SELECT item_id, device_name FROM device_list",
-      function (err, results) {
-        if (!err) {
-          getDeviceList(function (err, device_list) {
-            if (err) {
-              console.err(err.stack);
-              return;
-            }
-            for (let i in results) {
-              for (let j in device_list) {
-                if (j == results[i].item_id) {
-                  device_list[j][3] = results[i].device_name;
-                }
-              }
-            }
-
-            for (let i in device_list) {
-              if (!device_list[i][3]) {
-                delete device_list[i];
-              }
-            }
-
-            callback(null, device_list);
-          });
+    deviceRegistry_pool.getConnection(function (err, connection) {
+        if (err) {
+            console.log(err);
+            connection.release();
+            callback(err, null);
+            return;
         }
-      }
-    );
-    connection.release();
-    return;
-  });
+        connection.query(
+            "SELECT item_id, device_name FROM device_list",
+            function (err, results) {
+                if (!err) {
+                    getDeviceList(function (err, device_list) {
+                        if (err) {
+                            console.err(err.stack);
+                            return;
+                        }
+                        for (let i in results) {
+                            for (let j in device_list) {
+                                if (j == results[i].item_id) {
+                                    device_list[j][3] = results[i].device_name;
+                                }
+                            }
+                        }
+
+                        for (let i in device_list) {
+                            if (!device_list[i][3]) {
+                                delete device_list[i];
+                            }
+                        }
+
+                        callback(null, device_list);
+                    });
+                }
+            }
+        );
+        connection.release();
+        return;
+    });
 };
 
 let getSensorTable = function (id, callback) {
-  deviceRegistry_pool.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback(err, null);
-      return;
-    }
-    connection.query(
-      "SELECT item_id, table_name FROM device_list",
-      function (err, results) {
-        if (!err) {
-          for (let i in results) {
-            if (results[i].item_id == id) {
-              callback(null, results[i].table_name);
-            }
-          }
+    deviceRegistry_pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            callback(err, null);
+            return;
         }
-
-        connection.release();
-      }
-    );
-  });
+        connection.query(
+            "SELECT item_id, table_name FROM device_list",
+            function (err, results) {
+                if (!err) {
+                    for (let i in results) {
+                        if (results[i].item_id == id) {
+                            callback(null, results[i].table_name);
+                        }
+                    }
+                }
+                connection.release();
+            }
+        );
+    });
 };
 
 let getNowData = function (item_id, callback) {
-  sensor_model_pool.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback(err, null);
-      return;
-    }
-    getSensorTable(item_id, function (err, table_name) {
-      if (!err) {
-        let sql = "SELECT * FROM ?? ORDER BY id DESC limit 1";
-        connection.query(sql, table_name, function (err, results) {
-          if (!err && results.length == 1) {
-            results = results[0];
-            getDeviceList(function (err, device_list) {
-              if (!err) {
-                for (let j in results) {
-                  for (let m in device_list[item_id][1]) {
-                    if (
-                      j == device_list[item_id][0][m] &&
-                      device_list[item_id][1][m] != null
-                    ) {
-                      results[j] += device_list[item_id][1][m];
-                    }
-                  }
-                }
+    sensor_model_pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            callback(err, null);
+            return;
+        }
+        getSensorTable(item_id, function (err, table_name) {
+            if (!err) {
+                let sql = "SELECT * FROM ?? ORDER BY id DESC limit 1";
+                connection.query(sql, table_name, function (err, results) {
+                    if (!err && results.length == 1) {
+                        results = results[0];
+                        getDeviceList(function (err, device_list) {
+                            if (!err) {
+                                for (let j in results) {
+                                    for (let m in device_list[item_id][1]) {
+                                        if (
+                                            j == device_list[item_id][0][m] &&
+                                            device_list[item_id][1][m] != null
+                                        ) {
+                                            results[j] += device_list[item_id][1][m];
+                                        }
+                                    }
+                                }
 
-                delete results.id;
-                delete results.timestamp;
-                //전달한 데이터 확인용
-                //console.log(results);
-                callback(null, results);
-              }
-            });
-          } else if (err) {
-            console.log(err.stack);
-          } else {
-            console.log("DB에 저장된 데이터 없음.");
-            getDeviceList(function (err, sensor) {
-              if (!err) {
-                let device_list = new Object();
-                for (let i in sensor[item_id][0]) {
-                  if (i != 0) {
-                    device_list[sensor[item_id][0][i]] = null;
-                  }
-                }
-                for (let i in sensor[item_id][2]) {
-                  if (i != 0) {
-                    for (let j in sensor[item_id][2][i]) {
-                      device_list[j] = null;
+                                delete results.id;
+                                delete results.timestamp;
+                                //전달한 데이터 확인용
+                                //console.log(results);
+                                callback(null, results);
+                            }
+                        });
+                    } else if (err) {
+                        console.log(err.stack);
+                    } else {
+                        console.log("DB에 저장된 데이터 없음.");
+                        getDeviceList(function (err, sensor) {
+                            if (!err) {
+                                let device_list = new Object();
+                                for (let i in sensor[item_id][0]) {
+                                    if (i != 0) {
+                                        device_list[sensor[item_id][0][i]] = null;
+                                    }
+                                }
+                                for (let i in sensor[item_id][2]) {
+                                    if (i != 0) {
+                                        for (let j in sensor[item_id][2][i]) {
+                                            device_list[j] = null;
+                                        }
+                                    }
+                                }
+                                //console.log(device_list);
+                                callback(null, device_list);
+                            }
+                        });
                     }
-                  }
-                }
-                //console.log(device_list);
-                callback(null, device_list);
-              }
-            });
-          }
+                });
+            } else {
+                console.err(err.stack);
+            }
         });
-      } else {
-        console.err(err.stack);
-      }
+        connection.release();
     });
-    connection.release();
-  });
 };
 
 let getLog = function (item_id, callback) {
-  sensor_model_pool.getConnection(function (err, connection) {
-    if (err) {
-      connection.release();
-      callback(err, null);
-      return;
-    }
-    getSensorTable(item_id, function (err, table_name) {
-      if (!err) {
-        let log = new Object();
-        let sql = "SELECT * FROM ?? ORDER BY id DESC limit 50";
-        connection.query(sql, table_name, function (err, results) {
-          if (!err) {
-            getDeviceList(function (err, device_list) {
-              if (!err) {
-                for (let i in results) {
-                  log[i] = {};
-                  for (let k in results[i]) {
-                    log[i][k] = results[i][k];
-                    if (results[i][k]) {
-                      for (let j in device_list[item_id][1]) {
-                        if (k == device_list[item_id][0][j]) {
-                          log[i][k] += device_list[item_id][1][j];
-                        }
-                      }
+    sensor_model_pool.getConnection(function (err, connection) {
+        if (err) {
+            connection.release();
+            callback(err, null);
+            return;
+        }
+        getSensorTable(item_id, function (err, table_name) {
+            if (!err) {
+                let log = new Object();
+                let sql = "SELECT * FROM ?? ORDER BY id DESC limit 50";
+                connection.query(sql, table_name, function (err, results) {
+                    if (!err) {
+                        getDeviceList(function (err, device_list) {
+                            if (!err) {
+                                for (let i in results) {
+                                    log[i] = {};
+                                    for (let k in results[i]) {
+                                        log[i][k] = results[i][k];
+                                        if (results[i][k]) {
+                                            for (let j in device_list[item_id][1]) {
+                                                if (k == device_list[item_id][0][j]) {
+                                                    log[i][k] += device_list[item_id][1][j];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                for (let i in log) {
+                                    for (let j in log[i]) {
+                                        if (j == "id") {
+                                            delete log[i][j];
+                                        }
+                                    }
+                                }
+                                callback(null, log);
+                            } else {
+                                console.log(err.stack);
+                            }
+                        });
+                    } else {
+                        console.err(err.stack);
                     }
-                  }
-                }
-                for (let i in log) {
-                  for (let j in log[i]) {
-                    if (j == "id") {
-                      delete log[i][j];
-                    }
-                  }
-                }
-                callback(null, log);
-              } else {
-                console.log(err.stack);
-              }
-            });
-          } else {
-            console.err(err.stack);
-          }
+                });
+                connection.release();
+            }
         });
-        connection.release();
-      }
     });
-  });
 };
 
-app.get("", function (req, res) {
-  //데이터 받아오기
-  getSensorList(function (err, devicelist) {
-    if (err) {
-      console.log(err.stack);
-      return;
-    }
-    //console.log({devicelist});
-    res.render("mainPage", {
-      devicelist,
+function getDict(item_id){
+    deviceRegistry_pool.query('SELECT item_id, table_name FROM device_list', function(err, results, fields){
+        console.log(results[0]['item_id'])
+        
+        results = results.reduce((result, item, index, array) => {
+            result[item.item_id] = item.table_name
+            return result
+        }, {})
+        
+        console.log('inside dict - res : ', results)
+        
+        return results
+    })
+    
+}
+
+
+app.get("/sensor_data", (req, res) => {
+    //    sensor_model_pool.query("SELECT * FROM device0007_act where item_id LIKE '%1%' ORDER BY id DESC limit 1", function (er, dd, fields) {
+    
+    
+    deviceRegistry_pool.query('SELECT table_name FROM device_list', function (er, results, fields) {
+        if (er) {
+            console.log(er);
+        }
+
+        sensor_model_pool.query("show tables LIKE '%_act%'", function (er, act, fields) {
+            if (er) {
+                console.log(er);
+            }
+            console.log(Object.values(act));
+            
+            sensor_model_pool.query("SELECT * FROM " + Object.values(act[1]) + " where led ORDER BY id DESC limit 1", function (er, item, fields) {
+                console.log("item : " + item)
+
+                getSensorList(function (err, devicelist) {
+                    if (err) {
+                        console.log(err.stack);
+                        return;
+                    }
+                    res.json({
+                        'actlist': item,
+                        'results': results,
+                        'devicelist': devicelist,
+                    });
+                });
+            })
+        })
+        //    sw = sensor_model_pool.query('SELECT * FROM device0006_act WHERE led');
+        //데이터 받아오기
+
     });
-    //console.log(devicelist[5][2])
-    //console.log(Object.keys(devicelist[5][2][2]))
-    //console.log(Object.values(devicelist[5][2][2]))
-  });
+});
+
+
+
+
+app.get("", function (req, res) {
+    
+    getSensorList(function (err, devicelist) {
+        if (err) {
+            console.log(err.stack);
+            return;
+        }
+        //        console.log("111",devicelist);
+        //        console.log("222",devicelist[4]);
+        //        console.log("333",devicelist[4][2][1]);
+        //        console.log("444",Object.keys(devicelist[4][2][1]));
+        //        console.log("555",devicelist[4][3]);
+        //        console.log(devicelist[1][1])
+        temp = {
+            '4': [
+                [null, 'humidity', 'temperature', 'light', 'dust'],
+                [null, '%', 'C', []],
+                [null, {
+                    "abc": 987
+                }, {
+                    "def": 232
+                }],
+                'Dsem test Collector 01'
+              ]
+        }
+
+        res.render("mainPage", {
+            "devicelist": temp
+        });
+    })
 });
 
 app.get("/mo", function (req, res) {
-  //데이터 받아오기
-  getSensorList(function (err, devicelist) {
-    if (err) {
-      console.log(err.stack);
-      return;
-    }
+    //데이터 받아오기
+    getSensorList(function (err, devicelist) {
+        if (err) {
+            console.log(err.stack);
+            return;
+        }
 
-    deviceId = req.query.id || req.body.id;
-    getNowData(deviceId, function (err, results) {
-      //            console.log(results);
-      res.render("monitoringUiMobile", {
-        results,
-      });
+        deviceId = req.query.id || req.body.id;
+        getNowData(deviceId, function (err, results) {
+            //            console.log(results);
+            res.render("monitoringUiMobile", {
+                results,
+            });
+        });
     });
-  });
 });
 
 app.get("/pc", function (req, res) {
-  //데이터 받아오기
-  getSensorList(function (err, devicelist) {
-    if (err) {
-      console.log(err.stack);
-      return;
-    }
+    //데이터 받아오기
+    getSensorList(function (err, devicelist) {
+        if (err) {
+            console.log(err.stack);
+            return;
+        }
 
-    deviceId = req.query.id || req.body.id;
-    getNowData(deviceId, function (err, results) {
-      res.render("monitoringUiPC", {
-        results,
-      });
+        deviceId = req.query.id || req.body.id;
+        getNowData(deviceId, function (err, results) {
+            res.render("monitoringUiPC", {
+                results,
+            });
+        });
     });
-  });
 });
 
 app.get("/log", function (req, res) {
-  //데이터 받아오기
-  getSensorList(function (err, devicelist) {
-    if (err) {
-      console.log(err.stack);
-      return;
-    }
+    //데이터 받아오기
+    getSensorList(function (err, devicelist) {
+        if (err) {
+            console.log(err.stack);
+            return;
+        }
 
-    deviceId = req.query.id || req.body.id;
-    getLog(deviceId, function (err, results) {
-      res.render("log", {
-        results,
-        devicelist,
-        deviceId,
-      });
+        deviceId = req.query.id || req.body.id;
+        getLog(deviceId, function (err, results) {
+            res.render("log", {
+                results,
+                devicelist,
+                deviceId,
+            });
+        });
     });
-  });
 });
+
+
+//    sensor_model_pool.query('ALTER TABLE device0007_act ADD item_id INT FIRST' );
+//////////////////////////////////////////////////
+app.get("/on", function (req, res) {
+    /* getDict(function(ref_dic) {
+        console.log("ref_dic : ", ref_dic)
+    }) */
+//    sensor_model_pool.query('ALTER TABLE device0006_act ADD item_id INT FIRST' );
+    var device_id = '1'
+    console.log("on!!")
+    
+    deviceRegistry_pool.query('SELECT item_id, table_name FROM device_list', function(err, results, fields){
+        
+        results = results.reduce((result, item, index, array) => {
+            result[item.item_id] = item.table_name
+            return result
+        }, {})
+        
+        console.log('inside dict - res : ', results[device_id])
+    
+        sensor_model_pool.query('INSERT INTO '+results[device_id]+'_act (item_id, led, timestamp) VALUES(1, 1, now())');
+    })
+
+    
+    //    getSensorList(function (err, devicelist) {
+    //        if (err) {
+    //            console.log(err.stack);
+    //            return;
+    //        }
+    //        res.render("mainPage", {
+    //            devicelist,
+    //        });
+    //    });
+    //   'UPDATE device0006_act SET led=1'
+    //   'INSERT INTO device0006_act(led) VALUES(1)'
+    res.send(200)
+});
+
+app.get("/off", function (req, res) {
+    var device_id = '1'
+    
+    deviceRegistry_pool.query('SELECT item_id, table_name FROM device_list', function(err, results, fields){
+        console.log("off!!")
+        
+        results = results.reduce((result, item, index, array) => {
+            result[item.item_id] = item.table_name
+            return result
+        }, {})
+        
+        console.log('inside dict - res : ', results[device_id])
+        sensor_model_pool.query('INSERT INTO '+results[device_id]+'_act (item_id, led, timestamp) VALUES(1, 0, now())');
+    })
+    
+    res.send(200)
+    //    getSensorList(function (err, devicelist) {
+    //        if (err) {
+    //            console.log(err.stack);
+    //            return;
+    //        }
+    //
+    //        res.render("mainPage", {
+    //            devicelist,
+    //        });
+    //    });
+    //    'UPDATE device0006_act SET led=0'
+    //    'INSERT INTO device0006_act(led) VALUES(0)'
+})
+
+    
+//////////////////////////////////////////////////
+
 
 //===== 서버 시작 =====//
 
 //확인되지 않은 예외 처리 - 서버 프로세스 종료하지 않고 유지함
 process.on("uncaughtException", function (err) {
-  console.log("uncaughtException 발생함 : " + err);
-  console.log("서버 프로세스 종료하지 않고 유지함.");
-  console.log(err.stack);
+    console.log("uncaughtException 발생함 : " + err);
+    console.log("서버 프로세스 종료하지 않고 유지함.");
+    console.log(err.stack);
 });
 
 // 시작된 서버 객체를 리턴받도록 합니다.
 var server = http.createServer(app).listen(app.get("port"), function () {
-  console.log("서버가 시작되었습니다. 포트 : " + app.get("port"));
+    console.log("서버가 시작되었습니다. 포트 : " + app.get("port"));
 });
